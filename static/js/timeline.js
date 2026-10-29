@@ -1,4 +1,4 @@
-// 24/7 Timeline Playback Scrubber Component
+// 24/7 Professional Timeline Scrubber
 class CameraTimeline {
   constructor(canvasId, timeDisplayId, dateInputId) {
     this.canvas = document.getElementById(canvasId);
@@ -7,12 +7,10 @@ class CameraTimeline {
     this.dateInput = document.getElementById(dateInputId);
 
     this.currentDate = new Date().toISOString().split('T')[0];
-    this.currentSecond = 0; // 0 to 86400 (seconds in a day)
+    this.currentSecond = 0;
     this.chunks = [];
-    this.events = [];
     this.isDragging = false;
 
-    // Set initial date
     if (this.dateInput) {
       this.dateInput.value = this.currentDate;
       this.dateInput.addEventListener('change', (e) => {
@@ -21,7 +19,6 @@ class CameraTimeline {
       });
     }
 
-    // Set current time to now
     const now = new Date();
     this.currentSecond = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
 
@@ -48,7 +45,7 @@ class CameraTimeline {
       this.chunks = data.chunks || [];
       this.draw();
     } catch (err) {
-      console.error('[Timeline] Failed to load timeline data:', err);
+      console.error('[Timeline] Load error:', err);
     }
   }
 
@@ -92,7 +89,7 @@ class CameraTimeline {
         this.updateTimeDisplay();
         this.draw();
       }
-    });
+    }, { passive: true });
 
     this.canvas.addEventListener('touchmove', (e) => {
       if (this.isDragging && e.touches.length === 1) {
@@ -100,7 +97,7 @@ class CameraTimeline {
         this.updateTimeDisplay();
         this.draw();
       }
-    });
+    }, { passive: true });
 
     this.canvas.addEventListener('touchend', () => {
       if (this.isDragging) {
@@ -121,7 +118,6 @@ class CameraTimeline {
   }
 
   triggerSeek(second) {
-    // Find closest recording chunk matching this second
     const match = this.chunks.find((c) => {
       return second >= c.start_seconds && second <= (c.start_seconds + c.duration);
     });
@@ -139,49 +135,55 @@ class CameraTimeline {
 
     this.ctx.clearRect(0, 0, w, h);
 
-    // 1. Background Track
-    this.ctx.fillStyle = '#0f172a';
+    // Track Background
+    this.ctx.fillStyle = '#0a0f18';
     this.ctx.fillRect(0, 0, w, h);
 
-    // 2. Draw Recorded Chunks (Green bars for continuous 24/7 recording)
+    // Center Bar Track
+    const trackY = 22;
+    const trackH = h - 36;
+    this.ctx.fillStyle = '#162032';
+    this.ctx.fillRect(0, trackY, w, trackH);
+
+    // Continuous 24/7 Recorded Chunks (Emerald Green glow)
     this.ctx.fillStyle = '#10b981';
     for (const chunk of this.chunks) {
       const startX = (chunk.start_seconds / 86400) * w;
       const chunkW = Math.max(3, (chunk.duration / 86400) * w);
-      this.ctx.fillRect(startX, 16, chunkW, h - 32);
+      this.ctx.fillRect(startX, trackY, chunkW, trackH);
     }
 
-    // 3. Draw Hour Grid & Labels (00:00 -> 24:00)
-    this.ctx.font = '10px monospace';
+    // Hour Grid Lines & Labels (00:00 -> 24:00)
+    this.ctx.font = '10px ui-monospace, monospace';
     this.ctx.fillStyle = '#64748b';
     this.ctx.textAlign = 'center';
 
     for (let hour = 0; hour <= 24; hour += 2) {
       const x = (hour / 24) * w;
-      // Tick line
-      this.ctx.strokeStyle = '#334155';
+      this.ctx.strokeStyle = '#27354a';
+      this.ctx.lineWidth = 1;
       this.ctx.beginPath();
       this.ctx.moveTo(x, 0);
       this.ctx.lineTo(x, h);
       this.ctx.stroke();
 
-      // Label
       const label = `${String(hour).padStart(2, '0')}:00`;
-      this.ctx.fillText(label, x, 12);
+      this.ctx.fillText(label, x, 14);
     }
 
-    // 4. Draw Current Scrubber Cursor (Red line + triangle indicator)
+    // Red Scrubber Playhead
     const cursorX = (this.currentSecond / 86400) * w;
 
-    this.ctx.strokeStyle = '#ef4444';
+    // Glowing Scrubber Line
+    this.ctx.strokeStyle = '#f43f5e';
     this.ctx.lineWidth = 2;
     this.ctx.beginPath();
     this.ctx.moveTo(cursorX, 0);
     this.ctx.lineTo(cursorX, h);
     this.ctx.stroke();
 
-    // Red cursor handle triangle
-    this.ctx.fillStyle = '#ef4444';
+    // Scrubber Top Handle
+    this.ctx.fillStyle = '#f43f5e';
     this.ctx.beginPath();
     this.ctx.moveTo(cursorX - 6, 0);
     this.ctx.lineTo(cursorX + 6, 0);

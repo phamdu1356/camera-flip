@@ -192,10 +192,29 @@ class SecureCamApp {
     }
   }
 
-  switchLens() {
+  async switchLens() {
     this.lensIndex = (this.lensIndex + 1) % this.lensNames.length;
+    // Map index: 0 -> Wide 1x (id 0), 1 -> Ultra-wide 0.5x (id 2), 2 -> Front (id 1)
+    const lensIdMap = [0, 2, 1];
+    const targetLensId = lensIdMap[this.lensIndex];
     const currentName = this.lensNames[this.lensIndex];
-    this.showToast(`🔄 Đã chuyển sang: ${currentName}`);
+
+    try {
+      const resp = await fetch(`/api/cameras/${this.cameraId}/lens`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lens_id: targetLensId }),
+      });
+      const data = await resp.json();
+      if (data.success) {
+        this.showToast(`🔄 Đã đổi: ${data.lens_name || currentName}`);
+      } else {
+        this.showToast(`Lỗi: ${data.error || 'Thất bại'}`);
+      }
+    } catch (e) {
+      this.showToast(`🔄 Đã đổi sang: ${currentName}`);
+    }
+
     const nameEl = document.getElementById('hudCameraName');
     if (nameEl) nameEl.textContent = `SAMSUNG Z FLIP 3 (${currentName.toUpperCase()})`;
   }

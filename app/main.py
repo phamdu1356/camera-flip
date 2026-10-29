@@ -42,10 +42,17 @@ class PTZRequest(BaseModel):
     pan_x: float = 0.0
     pan_y: float = 0.0
 
+class LensRequest(BaseModel):
+    lens_id: int  # 0: Wide 1x, 2: Ultra-wide 0.5x, 1: Front
+
 @app.on_event("startup")
 def startup_event():
-    # Only use Camera 1 (Samsung Z Flip 3) - Do NOT access laptop webcam
-    cam1 = CameraStreamer(camera_id="cam_1", name="Samsung Z Flip 3 24/7", source_mode="phone")
+    # Camera 1 (Samsung Galaxy Z Flip 3 24/7 Hardware Streamer)
+    cam1 = CameraStreamer(
+        camera_id="cam_1",
+        name="Samsung Z Flip 3 24/7",
+        source_mode="phone",
+    )
     cam1.start()
     cameras["cam_1"] = cam1
 
@@ -97,6 +104,11 @@ def list_cameras():
             "zoom": cam.zoom,
             "night_mode": cam.night_mode,
             "torch_on": cam.torch_on,
+            "lens_id": cam.phone_camera_id,
+            "lens_name": cam.get_lens_name(cam.phone_camera_id),
+            "lens_tag": cam.get_lens_tag(cam.phone_camera_id),
+            "hardware_active": cam.hardware_active,
+            "adb_state": cam.adb_state,
             "stream_url": f"/api/stream/{cid}",
         })
     return result
@@ -108,6 +120,25 @@ def control_ptz(camera_id: str, ptz: PTZRequest):
     cam = cameras[camera_id]
     cam.set_ptz(ptz.zoom, ptz.pan_x, ptz.pan_y)
     return {"success": True, "zoom": cam.zoom, "pan_x": cam.pan_x, "pan_y": cam.pan_y}
+
+@app.post("/api/cameras/{camera_id}/lens")
+def switch_lens(camera_id: str, req: LensRequest):
+    if camera_id not in cameras:
+        raise HTTPException(status_code=404, detail="Camera not found")
+    cam = cameras[camera_id]
+    res = cam.switch_lens(req.lens_id)
+    return res
+
+@app.get("/api/cameras/{camera_id}/lens")
+def get_lens(camera_id: str):
+    if camera_id not in cameras:
+        raise HTTPException(status_code=404, detail="Camera not found")
+    cam = cameras[camera_id]
+    return {
+        "lens_id": cam.phone_camera_id,
+        "lens_name": cam.get_lens_name(cam.phone_camera_id),
+        "lens_tag": cam.get_lens_tag(cam.phone_camera_id),
+    }
 
 @app.post("/api/cameras/{camera_id}/night_mode")
 def toggle_night(camera_id: str):
@@ -139,7 +170,7 @@ def take_snapshot(camera_id: str):
 
 @app.get("/api/recordings/timeline")
 def get_timeline(date: str = ""):
-    """Get all 5-min chunks recorded on a date (format: YYYY-MM-DD)."""
+    """Get all recorded chunks for a specific date (format: YYYY-MM-DD)."""
     if not date:
         date = time.strftime("%Y-%m-%d")
     from app.recorder import ContinuousRecorder
@@ -183,20 +214,28 @@ def system_status():
     total_bytes = sum(f.stat().st_size for f in RECORDINGS_DIR.rglob("*") if f.is_file())
     used_gb = round(total_bytes / (1024**3), 2)
 
-    # Check ADB status
-    import subprocess
+    # Check ADB status directly from camera streamer instance
     adb_status = "Disconnected"
-    try:
-        out = subprocess.check_output(["adb", "devices", "-l"], timeout=1).decode()
-        lines = [line.strip() for line in out.splitlines() if line.strip() and not line.startswith("List of")]
-        if any("device" in l and "unauthorized" not in l for l in lines):
-            adb_status = "Connected (Z Flip 3)"
-        elif any("unauthorized" in l for l in lines):
+    cam = cameras.get("cam_1")
+    if cam:
+        if cam.adb_state == "device":
+            adb_status = f"Connected (Z Flip 3 - {cam.active_serial})"
+        elif cam.adb_state == "unauthorized":
             adb_status = "Awaiting Phone Authorization"
         else:
             adb_status = "No USB Device"
-    except Exception:
-        pass
+    else:
+        # Fallback check
+        try:
+            import subprocess
+            out = subprocess.check_output(["adb", "devices", "-l"], timeout=1).decode()
+            lines = [line.strip() for line in out.splitlines() if line.strip() and not line.startswith("List of")]
+            if any("device" in l and "unauthorized" not in l for l in lines):
+                adb_status = "Connected (Z Flip 3)"
+            elif any("unauthorized" in l for l in lines):
+                adb_status = "Awaiting Phone Authorization"
+        except Exception:
+            pass
 
     return {
         "status": "Online 24/7",
@@ -218,7 +257,6 @@ async def websocket_endpoint(websocket: WebSocket):
     active_websockets.append(websocket)
     try:
         while True:
-            # Send status update every second
             status_payload = {
                 "type": "telemetry",
                 "time": time.strftime("%Y-%m-%d %H:%M:%S"),
@@ -229,6 +267,11 @@ async def websocket_endpoint(websocket: WebSocket):
                         "bitrate": round(c.bitrate_kbps, 0),
                         "night_mode": c.night_mode,
                         "torch_on": c.torch_on,
+                        "lens_id": c.phone_camera_id,
+                        "lens_name": c.get_lens_name(c.phone_camera_id),
+                        "lens_tag": c.get_lens_tag(c.phone_camera_id),
+                        "hardware_active": c.hardware_active,
+                        "adb_state": c.adb_state,
                     }
                     for cid, c in cameras.items()
                 ],

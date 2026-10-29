@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>SecureCam 24/7 - Giám Sát An Ninh Đa Nền Tảng</title>
+  
+  <!-- PWA & Mobile Web App Meta -->
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#0ea5e9" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="SecureCam" />
+  <link rel="apple-touch-icon" href="/static/icons/icon-192.png" />
+  <link rel="icon" type="image/png" href="/static/icons/icon-192.png" />
+
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+
+  <!-- Top App Navigation Bar -->
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-icon">📹</div>
+      <div class="brand-title">
+        <span>SECURECAM</span>
+        <span class="badge-247">24/7 PRO</span>
+      </div>
+    </div>
+
+    <div class="header-status">
+      <div class="status-indicator">
+        <span class="dot-live"></span>
+        <span id="headerAdbStatus">Đang kiểm tra...</span>
+      </div>
+
+      <button class="btn-header" id="btnFullscreen" title="Toàn màn hình">
+        <span>⛶</span> Toàn màn hình
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Application Body -->
+  <main class="main-content">
+
+    <!-- View & Camera Mode Switcher -->
+    <div class="view-bar">
+      <div class="tabs-camera">
+        <button class="tab-btn active" data-cam="cam_1">Z Flip 3 (Cửa Chính)</button>
+        <button class="tab-btn" data-cam="cam_2">Webcam 2 (Phòng Khách)</button>
+      </div>
+
+      <div class="grid-modes">
+        <button class="grid-btn active" id="btnGrid1x1" title="Xem 1 Camera">⬛</button>
+        <button class="grid-btn" id="btnGrid2x2" title="Xem Lưới 4 Camera">⊞</button>
+      </div>
+    </div>
+
+    <!-- Live Surveillance Video Stage -->
+    <div class="video-stage grid-1x1" id="videoStage">
+      <div class="camera-feed-card selected" id="card-cam_1">
+        <div class="feed-header-overlay">
+          <div class="cam-badge-tag">
+            <span class="rec-dot"></span>
+            <span>Samsung Z Flip 3 (Cửa Chính)</span>
+          </div>
+          <div class="cam-badge-tag" id="stats-cam_1">
+            25 FPS | HD
+          </div>
+        </div>
+        <img class="camera-stream-img" src="/api/stream/cam_1" alt="Camera Stream" />
+      </div>
+    </div>
+
+    <!-- CCTV Quick Action Toolbar (Ezviz / Imou Style) -->
+    <div class="action-toolbar">
+      <div class="tool-group">
+        <button class="cctv-btn" id="btnSnapshot" title="Chụp ảnh ngay">
+          <span>📸</span> Chụp Ảnh
+        </button>
+        
+        <button class="cctv-btn" id="btnTorch" title="Bật/Tắt đèn Flash ban đêm">
+          <span>🔦</span> Đèn Flash
+        </button>
+
+        <button class="cctv-btn" id="btnNight" title="Chế độ hồng ngoại nhìn đêm">
+          <span>🌙</span> Hồng Ngoại
+        </button>
+
+        <button class="cctv-btn danger" id="btnSiren" title="Hú còi báo động xua trộm">
+          <span>🚨</span> Còi Báo Động
+        </button>
+      </div>
+
+      <!-- PTZ Zoom Controls -->
+      <div class="tool-group">
+        <div class="ptz-cluster">
+          <button class="ptz-btn" id="btnZoomOut">-</button>
+          <span class="ptz-val" id="ptzZoomVal">1.0x</span>
+          <button class="ptz-btn" id="btnZoomIn">+</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lower Section: 24/7 Playback Timeline & Events -->
+    <div class="lower-dashboard">
+      <div class="panel-tabs">
+        <button class="panel-tab active" id="tabTimeline">
+          <span>⏪ Xem Lại 24/7 (Timeline)</span>
+        </button>
+        <button class="panel-tab" id="tabEvents">
+          <span>🔔 Sự Kiện Chuyển Động</span>
+          <span class="badge-count" id="eventBadgeCount">0</span>
+        </button>
+      </div>
+
+      <!-- 24/7 Timeline View -->
+      <div class="timeline-container" id="panelTimelineContent">
+        <div class="timeline-header">
+          <div class="date-selector">
+            <span>📅 Chọn Ngày:</span>
+            <input type="date" id="timelineDateInput" />
+          </div>
+
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:0.85rem; color:#94a3b8;">Thời gian tua:</span>
+            <span class="timeline-current-time" id="timelineCurrentTime">12:00:00</span>
+          </div>
+        </div>
+
+        <div class="timeline-ruler-wrap">
+          <canvas class="timeline-canvas" id="timelineCanvas"></canvas>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#64748b; flex-wrap:wrap; gap:8px;">
+          <span>🟢 Vạch màu xanh: Ghi hình liên tục 24/7 (Click vào vạch để mở video xem lại)</span>
+          <span>💾 Dung lượng ổ cứng: <strong id="storageStatText" style="color:#0ea5e9;">--</strong></span>
+        </div>
+      </div>
+
+      <!-- Motion Events Gallery -->
+      <div class="events-grid" id="eventsGrid" style="display: none;">
+        <!-- Dynamic event cards -->
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Media Playback Modal (For Video Chunks & Fullscreen Snapshots) -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 id="modalTitle" style="color:#fff; font-size:1rem;">Xem Lại</h4>
+        <button id="modalClose" style="background:none; border:none; color:#94a3b8; font-size:1.5rem; cursor:pointer;">&times;</button>
+      </div>
+      <div class="modal-body" id="modalBody">
+        <!-- Media injected dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Switch Tabs JS -->
+  <script>
+    const tabTimeline = document.getElementById('tabTimeline');
+    const tabEvents = document.getElementById('tabEvents');
+    const panelTimeline = document.getElementById('panelTimelineContent');
+    const panelEvents = document.getElementById('eventsGrid');
+
+    tabTimeline.addEventListener('click', () => {
+      tabTimeline.classList.add('active');
+      tabEvents.classList.remove('active');
+      panelTimeline.style.display = 'flex';
+      panelEvents.style.display = 'none';
+    });
+
+    tabEvents.addEventListener('click', () => {
+      tabEvents.classList.add('active');
+      tabTimeline.classList.remove('active');
+      panelTimeline.style.display = 'none';
+      panelEvents.style.display = 'grid';
+    });
+  </script>
+
+  <!-- Scripts -->
+  <script src="/static/js/timeline.js"></script>
+  <script src="/static/js/app.js"></script>
+
+</body>
+</html>

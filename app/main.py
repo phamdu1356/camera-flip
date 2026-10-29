@@ -44,15 +44,10 @@ class PTZRequest(BaseModel):
 
 @app.on_event("startup")
 def startup_event():
-    # Initialize Camera 1 (Samsung Z Flip 3 / Main)
-    cam1 = CameraStreamer(camera_id="cam_1", name="Samsung Z Flip 3 (Cửa Chính)", source_mode="phone")
+    # Only use Camera 1 (Samsung Z Flip 3) - Do NOT access laptop webcam
+    cam1 = CameraStreamer(camera_id="cam_1", name="Samsung Z Flip 3 24/7", source_mode="phone")
     cam1.start()
     cameras["cam_1"] = cam1
-
-    # Initialize Camera 2 (Webcam / Phòng Khách)
-    cam2 = CameraStreamer(camera_id="cam_2", name="Camera 2 (Phòng Khách)", source_mode="webcam", device_index=0)
-    cam2.start()
-    cameras["cam_2"] = cam2
 
 @app.on_event("shutdown")
 def shutdown_event():

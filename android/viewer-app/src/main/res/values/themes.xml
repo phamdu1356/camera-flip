@@ -1,0 +1,11 @@
+<resources>
+    <style name="Theme.FlipViewer" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="android:statusBarColor">@color/viewer_bg</item>
+        <item name="android:navigationBarColor">@color/viewer_bg</item>
+        <item name="android:windowBackground">@color/viewer_bg</item>
+        <item name="colorPrimary">@color/viewer_accent</item>
+        <item name="colorOnPrimary">@color/viewer_bg</item>
+        <item name="colorSurface">@color/viewer_surface</item>
+        <item name="colorOnSurface">@color/viewer_text_primary</item>
+    </style>
+</resources>

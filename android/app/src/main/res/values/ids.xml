@@ -1,0 +1,4 @@
+<resources>
+    <item name="viewerPasswordInput" type="id" />
+    <item name="viewerPasswordConfirmation" type="id" />
+</resources>

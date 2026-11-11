@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">Xem Camera Flip</string>
+    <string name="viewer_title">Flip Viewer</string>
+    <string name="status_connecting">Đang kết nối…</string>
+    <string name="status_connected">Trực tiếp</string>
+    <string name="status_error">Mất kết nối</string>
+    <string name="action_reload">Tải lại</string>
+    <string name="action_settings">Đổi địa chỉ máy chủ</string>
+    <string name="action_fullscreen">Toàn màn hình</string>
+    <string name="action_exit_fullscreen">Thu nhỏ</string>
+    <string name="server_dialog_title">Địa chỉ máy chủ Flip Camera</string>
+    <string name="server_dialog_hint">Ví dụ: https://192.168.0.106:8443/</string>
+    <string name="btn_save">Lưu và kết nối</string>
+    <string name="btn_cancel">Hủy</string>
+    <string name="btn_retry">Thử lại ngay</string>
+    <string name="btn_reset_default">Đặt lại mặc định</string>
+    <string name="error_title">Không thể kết nối đến Flip Camera</string>
+    <string name="error_desc">Vui lòng kiểm tra điện thoại Flip3 đã bật Flip Camera và cùng kết nối vào mạng Wi-Fi cục bộ.</string>
+    <string name="default_server_url">https://192.168.0.106:8443/</string>
+    <string name="action_update">Kiểm tra cập nhật</string>
+</resources>

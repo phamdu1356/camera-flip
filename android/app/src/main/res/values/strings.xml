@@ -1,0 +1,159 @@
+<resources>
+    <string name="app_name">Flip Camera</string>
+    <string name="home_title">Flip Camera</string>
+    <string name="home_subtitle">Quản trị trực tiếp trên Samsung Galaxy Z Flip3</string>
+    <string name="section_status">Trạng thái camera</string>
+    <string name="action_history">Xem lịch sử phân đoạn</string>
+    <string name="action_retention">Dọn video cũ</string>
+    <string name="action_motion_events">Sự kiện chuyển động</string>
+    <string name="motion_events_title">Sự kiện chuyển động gần đây</string>
+    <string name="motion_events_empty">Chưa có sự kiện chuyển động. Sự kiện chỉ được phân tích trong lúc ghi hình và khi thiết bị hỗ trợ ImageAnalysis.</string>
+    <string name="motion_event_item">%1$s\nĐiểm thay đổi: %2$.0f%%</string>
+    <string name="motion_event_no_segment">Sự kiện này không liên kết với phân đoạn video còn dùng được.</string>
+    <string name="segment_action_protect">Bảo vệ khỏi tự xóa</string>
+    <string name="segment_action_unprotect">Bỏ bảo vệ</string>
+    <string name="segment_action_export">Tải video về máy…</string>
+    <string name="segment_action_delete">Xóa video</string>
+    <string name="segment_delete_title">Xóa video này?</string>
+    <string name="segment_delete_message">Video sẽ bị xóa khỏi bộ nhớ ứng dụng. Thao tác này không thể hoàn tác.</string>
+    <string name="segment_protection_changed">Đã cập nhật trạng thái bảo vệ.</string>
+    <string name="segment_protection_failed">Không cập nhật được. Hãy mở lại thư viện và thử lại.</string>
+    <string name="segment_deleted">Đã xóa video.</string>
+    <string name="segment_delete_failed">Không thể xóa video. Dữ liệu chưa bị thay đổi.</string>
+    <string name="segment_delete_cleanup_pending">Video đã được gỡ khỏi thư viện; dọn tệp sẽ được thử lại sau.</string>
+    <string name="segment_export_failed">Không thể xuất video. Kiểm tra dung lượng và quyền truy cập nơi lưu.</string>
+    <string name="segment_export_failed_partial">Xuất video thất bại; tệp dở dang có thể vẫn còn ở nơi lưu. Hãy kiểm tra và xóa tệp đó.</string>
+    <string name="segment_exported">Đã xuất video.</string>
+    <string name="retention_title">Dọn video cũ</string>
+    <string name="retention_message">Chọn tuổi tối đa. Chỉ video cũ hơn mốc này và chưa được bảo vệ mới bị xóa. Không có thời hạn tự xóa mặc định.</string>
+    <string name="retention_confirm_message">Tìm thấy %1$s video và %2$s sự kiện cũ hơn %3$d ngày. Video được bảo vệ sẽ được giữ lại. Sau khi xác nhận, video và thumbnail sự kiện sẽ bị dọn khỏi bộ nhớ ứng dụng.</string>
+    <string name="retention_run">Dọn ngay</string>
+    <string name="retention_complete">Đã dọn %1$d video và %2$d sự kiện. %3$d tệp đang chờ thử lại.</string>
+    <string name="retention_failed">Không thể hoàn tất dọn video cũ.</string>
+    <string name="viewer_section_title">HTTPS ghép đôi trong mạng nội bộ</string>
+    <string name="viewer_stopped">Máy chủ đang tắt</string>
+    <string name="viewer_starting">Đang khởi động HTTPS…</string>
+    <string name="viewer_running">HTTPS đang chạy</string>
+    <string name="viewer_disabled">Bật camera trước để khởi động máy chủ.</string>
+    <string name="viewer_no_endpoint">Địa chỉ LAN sẽ hiện ở đây.</string>
+    <string name="viewer_no_fingerprint">Fingerprint TLS sẽ hiện ở đây.</string>
+    <string name="viewer_phase_notice">Viewer đã hỗ trợ ghép đôi, live, timeline, sự kiện và phát lại trong mạng nội bộ. Chứng chỉ tự ký; hãy kiểm tra fingerprint trước khi truy cập. Hướng dẫn tin cậy chứng chỉ trong trình duyệt chưa được tích hợp.</string>
+    <string name="viewer_action_start">Bật HTTPS viewer</string>
+    <string name="viewer_action_stop">Tắt viewer và thu hồi phiên</string>
+    <string name="viewer_action_code">Tạo mã ghép đôi</string>
+    <string name="viewer_action_requests">Yêu cầu đang chờ</string>
+    <string name="viewer_password_title">Đặt / đổi mật khẩu xem</string>
+    <string name="viewer_password_message">Đặt một lần trên Flip, sau đó đăng nhập ngay trên web. Đổi mật khẩu sẽ đăng xuất tất cả thiết bị; video vẫn tiếp tục được ghi.</string>
+    <string name="viewer_password_new">Mật khẩu mới (8–128 ký tự)</string>
+    <string name="viewer_password_confirm">Nhập lại mật khẩu</string>
+    <string name="viewer_password_save">Lưu mật khẩu</string>
+    <string name="viewer_password_length">Dùng từ 8 đến 128 ký tự.</string>
+    <string name="viewer_password_mismatch">Hai mật khẩu chưa khớp.</string>
+    <string name="viewer_password_configured">Đã đặt mật khẩu. Web đăng nhập không cần duyệt trên Flip.</string>
+    <string name="viewer_password_unset">Chưa đặt mật khẩu xem.</string>
+    <string name="viewer_password_saved">Đã lưu mật khẩu. Mở lại trang web và đăng nhập bằng mật khẩu mới.</string>
+    <string name="viewer_password_failed">Chưa lưu được. Kiểm tra camera còn kết nối rồi thử lại.</string>
+    <string name="viewer_password_remove">Xóa mật khẩu xem</string>
+    <string name="viewer_password_remove_message">Đăng nhập bằng mật khẩu sẽ bị tắt và tất cả phiên xem sẽ bị thu hồi. Bạn vẫn có thể dùng mã ghép đôi. Video trên Flip được giữ nguyên và tiếp tục ghi. Xóa mật khẩu?</string>
+    <string name="viewer_password_removed">Đã xóa mật khẩu và thu hồi các phiên xem.</string>
+    <string name="viewer_pair_code_title">Mã ghép đôi · hết hạn sau 2 phút</string>
+    <string name="viewer_pair_code_message">Dùng mã này trên trang viewer đang mở cùng địa chỉ LAN. Mã chỉ dùng một lần và hết hạn sau hai phút; tạo mã mới sẽ làm mã cũ mất hiệu lực.</string>
+    <string name="viewer_pair_code_copied">Đã sao chép mã ghép đôi</string>
+    <string name="viewer_no_requests">Không có yêu cầu ghép đôi đang chờ.</string>
+    <string name="viewer_request_title">Yêu cầu ghép đôi</string>
+    <string name="viewer_request_details">%1$s\nĐịa chỉ: %2$s\nHết hạn: %3$s</string>
+    <string name="viewer_request_approve">Cho phép viewer này</string>
+    <string name="viewer_request_reject">Từ chối viewer này</string>
+    <string name="viewer_request_handled">Yêu cầu đã được xử lý.</string>
+    <string name="viewer_request_error">Không thể xử lý yêu cầu ghép đôi.</string>
+    <string name="viewer_no_lan_address">Không tìm thấy địa chỉ LAN. Kết nối cùng Wi-Fi rồi thử lại.</string>
+    <string name="viewer_network_monitor_failed">Không theo dõi được Wi-Fi/Ethernet. Hãy khởi động lại camera rồi thử bật viewer.</string>
+    <string name="viewer_start_failed">Không khởi động được HTTPS server.</string>
+    <string name="viewer_pairing_unavailable">Viewer chưa chạy. Bật viewer rồi thử lại.</string>
+    <string name="open_app_settings">Mở Cài đặt ứng dụng</string>
+    <string name="cancel">Hủy</string>
+    <string name="permission_dialog_title">Yêu cầu quyền truy cập</string>
+    <string name="notification_channel_name">Flip Camera Service</string>
+    <string name="recording_notification_title">Flip Camera — camera đang hoạt động</string>
+    <string name="status_camera_permission_missing">Thiếu quyền Camera. Chọn Kết nối camera để thử lại hoặc cấp quyền trong Cài đặt.</string>
+    <string name="history_dialog_title">Thư viện video</string>
+    <string name="history_dialog_hint">Chạm để phát. Nhấn giữ để bảo vệ, tải về máy hoặc xóa video.</string>
+    <string name="close">Đóng</string>
+
+    <string name="camera_action_connect">Kết nối camera</string>
+    <string name="camera_action_start_recording">Bắt đầu ghi hình</string>
+    <string name="camera_action_stop_recording">Dừng ghi hình</string>
+    <string name="camera_action_stop_camera">Dừng camera</string>
+    <string name="camera_state_idle">Camera đã dừng</string>
+    <string name="camera_state_connecting">Đang kết nối camera…</string>
+    <string name="camera_state_ready">Camera sẵn sàng — chưa ghi hình</string>
+    <string name="camera_state_starting">Đang bắt đầu ghi hình…</string>
+    <string name="camera_state_recording">Đang ghi hình</string>
+    <string name="camera_state_segment_saved">Đã lưu phân đoạn video</string>
+    <string name="camera_state_stopping">Đang hoàn tất video…</string>
+    <string name="camera_state_error">Camera gặp lỗi</string>
+    <string name="camera_idle_message">Chọn Kết nối camera để xem trực tiếp. Video chỉ bắt đầu khi bạn chọn Bắt đầu ghi hình.</string>
+    <string name="camera_quality_title">Chất lượng video</string>
+    <string name="camera_quality_help">Chọn trước khi kết nối. Camera có thể tự giảm chất lượng nếu thiết bị không hỗ trợ mức đã chọn.</string>
+    <string-array name="camera_quality_options">
+        <item>HD · 720p (ưu tiên)</item>
+        <item>SD · 480p (tiết kiệm dung lượng)</item>
+    </string-array>
+    <string name="camera_connecting_message">Đang mở camera. Chưa ghi video.</string>
+    <string name="camera_ready_message">Xem trực tiếp đang sẵn sàng. Chọn Bắt đầu ghi hình để tạo video.</string>
+    <string name="camera_ready_no_viewer">Thiết bị không hỗ trợ ImageAnalysis cùng preview/ghi hình; live viewer và sự kiện chuyển động không khả dụng. Ghi hình vẫn hoạt động.</string>
+    <string name="camera_recording_message">Video được lưu riêng trên thiết bị. Sự kiện chuyển động được phân tích cục bộ khi ImageAnalysis khả dụng. Âm thanh chỉ được ghi khi bạn bật ở thẻ Lưu trữ.</string>
+    <string name="camera_stopping_message">Chờ tệp video đóng và cập nhật lịch sử.</string>
+    <string name="camera_error_message">Không thể sử dụng camera. Dừng camera rồi kết nối lại.</string>
+    <string name="camera_preview_description">Hình ảnh trực tiếp từ camera</string>
+    <string name="camera_preview_idle">Hình ảnh trực tiếp xuất hiện sau khi kết nối camera.</string>
+    <string name="camera_capture_notice">Kết nối chỉ mở chế độ xem trực tiếp. Ghi hình bắt đầu bằng nút riêng và tiếp tục khi rời màn hình này. Chọn Dừng camera để giải phóng camera. Micro luôn tắt trong giai đoạn này.</string>
+    <string name="camera_permission_missing">Cần quyền Camera để kết nối. Chọn Kết nối camera để thử lại hoặc cấp quyền trong Cài đặt ứng dụng.</string>
+    <string name="camera_notifications_denied">Thông báo bị từ chối. Camera vẫn có thể hoạt động, nhưng thông báo dịch vụ có thể không xuất hiện trong ngăn thông báo.</string>
+    <string name="camera_permissions_waiting">Đang chờ cấp quyền Camera. Chưa mở camera hoặc ghi video.</string>
+    <string name="camera_connection_failed">Không thể kết nối dịch vụ camera. Chưa bắt đầu ghi hình.</string>
+    <string name="camera_service_disconnected">Mất kết nối với dịch vụ. Kết nối lại để kiểm tra camera.</string>
+    <string name="camera_record_request">Đã yêu cầu bắt đầu ghi. Đang chờ xác nhận từ camera.</string>
+    <string name="camera_command_failed">Không thể gửi yêu cầu tới dịch vụ camera.</string>
+    <string name="camera_history_loading">Đang đọc lịch sử video…</string>
+    <string name="camera_history_empty">Chưa có phân đoạn video hoàn tất trong cơ sở dữ liệu. Kết nối camera, bắt đầu rồi dừng ghi hình để tạo video.</string>
+    <string name="camera_history_failed">Không thể đọc lịch sử video. Hãy thử mở lại ứng dụng.</string>
+    <string name="camera_history_item">%1$s\n%2$s · %3$s · %4$s</string>
+    <plurals name="camera_history_duration">
+        <item quantity="other">%1$d phút %2$02d giây</item>
+    </plurals>
+    <string name="camera_playback_pending">Không thể dùng FileProvider để mở video này. Kiểm tra cấu hình ứng dụng rồi thử lại.</string>
+    <string name="camera_playback_unavailable">Không thể mở video: tệp không còn tồn tại hoặc nằm ngoài thư mục video của ứng dụng.</string>
+    <string name="camera_playback_no_player">Không tìm thấy ứng dụng có thể phát video MP4.</string>
+    <string name="storage_policy_title">Lưu trữ</string>
+    <string name="storage_policy_help">Mặc định ghi liên tục và không tự xóa. Giới hạn 0 nghĩa là không giới hạn.</string>
+    <string name="storage_policy_mode_label">Chế độ ghi</string>
+    <string-array name="storage_mode_options">
+        <item>Liên tục</item>
+        <item>Theo chuyển động</item>
+    </string-array>
+    <string name="storage_fps_mode_label">Tốc độ khung hình</string>
+    <string-array name="storage_fps_mode_options">
+        <item>Mượt · 30 fps (mặc định)</item>
+        <item>Giảm tải · 15 fps (live cũng ~15 fps)</item>
+    </string-array>
+    <string name="storage_fps_mode_help">Áp dụng ở lần kết nối camera kế tiếp, không đổi khi đang ghi. Chế độ 15 fps chạy camera nhẹ hơn nhưng xem trực tiếp chỉ ~15 fps; đã đo trên Flip3: KHÔNG giảm dung lượng video (Samsung giữ bitrate tối thiểu).</string>
+    <string name="storage_codec_label">Codec ghi hình</string>
+    <string-array name="storage_codec_options">
+        <item>H.264 (mặc định)</item>
+        <item>HEVC (thử nghiệm, browser Linux có thể không phát được)</item>
+    </string-array>
+    <string name="storage_codec_help">Áp dụng ở lần kết nối camera kế tiếp, không đổi khi đang ghi. HEVC chỉ dùng khi máy có encoder HEVC; kiểm tra lại codec thực tế trong danh sách phân đoạn.</string>
+    <string name="storage_audio_label">Ghi âm thanh vào video (micro)</string>
+    <string name="storage_audio_help">Mặc định tắt. Áp dụng ở lần kết nối camera kế tiếp; app sẽ xin quyền micro. Chỉ bật khi mọi người trong vùng ghi đã biết và đồng ý.</string>
+    <string name="storage_speaker_label">Loa đàm thoại từ viewer (Talkback)</string>
+    <string name="storage_speaker_help">Mặc định bật. Cho phép người xem phát âm thanh qua loa Flip3. Tắt công tắc này để ngắt âm thanh phát ra loa điện thoại.</string>
+    <string name="storage_encoder_tuning_label">Tối ưu encoder: fps encoder 15, I-frame 2 s (thử nghiệm)</string>
+    <string name="storage_encoder_tuning_help">Áp dụng ở lần kết nối camera kế tiếp. Camera và xem trực tiếp vẫn 30 fps; chưa kiểm chứng giảm dung lượng trên Flip3.</string>
+    <string name="storage_policy_motion_warning">Chỉ giữ đoạn có chuyển động (±10s/15s); chưa kiểm chứng trên máy thật</string>
+    <string name="storage_policy_max_days">Số ngày giữ tối đa (0 = không giới hạn)</string>
+    <string name="storage_policy_max_gb">Dung lượng tối đa, GB (0 = không giới hạn)</string>
+    <string name="storage_policy_save">Lưu cài đặt lưu trữ</string>
+    <string name="storage_policy_saved">Đã lưu cài đặt lưu trữ. Áp dụng ở chu kỳ dọn tiếp theo.</string>
+    <string name="storage_policy_invalid">Nhập số ngày nguyên từ 0 trở lên và dung lượng GB từ 0 trở lên.</string>
+</resources>

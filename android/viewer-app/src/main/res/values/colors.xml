@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="viewer_bg">#0B0E0D</color>
+    <color name="viewer_surface">#141A18</color>
+    <color name="viewer_surface_variant">#1E2623</color>
+    <color name="viewer_border">#2A3632</color>
+    <color name="viewer_accent">#10B981</color>
+    <color name="viewer_accent_light">#34D399</color>
+    <color name="viewer_accent_dark">#059669</color>
+    <color name="viewer_text_primary">#F3F4F6</color>
+    <color name="viewer_text_secondary">#9CA3AF</color>
+    <color name="viewer_status_connected">#10B981</color>
+    <color name="viewer_status_connecting">#F59E0B</color>
+    <color name="viewer_status_error">#EF4444</color>
+    <color name="viewer_overlay">#CC0B0E0D</color>
+</resources>

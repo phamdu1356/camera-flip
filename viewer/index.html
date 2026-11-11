@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0b0e0d" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Flip Camera" />
+    <meta
+      name="description"
+      content="Kết nối riêng tư tới camera Flip trong mạng nội bộ của bạn."
+    />
+    <title>Flip Camera · Viewer</title>
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="assets/fonts.css" />
+    <link rel="stylesheet" href="viewer.css" />
+    <script type="module" src="viewer.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Chuyển đến nội dung</a>
+    <header class="topbar">
+      <h1 class="brand-heading">
+        <a class="brand" href="/" aria-label="Flip Camera, trang chính">
+          <span class="brand-mark" aria-hidden="true"><i></i><i></i></span>
+          <span>flip<span class="brand-light">camera</span></span>
+        </a>
+      </h1>
+      <div class="connection-state" id="connection-state" role="status" aria-live="polite">
+        <span class="connection-dot" aria-hidden="true"></span>
+        <span id="connection-label">Đang kiểm tra kết nối</span>
+      </div>
+    </header>
+
+    <main id="main" tabindex="-1">
+      <section id="pair-screen" class="pair-screen" aria-labelledby="pair-title">
+        <div class="pair-intro">
+          <div class="lens-art" aria-hidden="true">
+            <div class="lens-ring lens-ring-outer"><div class="lens-ring lens-ring-inner"></div></div>
+            <span class="lens-glint"></span>
+            <span class="lens-axis lens-axis-x"></span>
+            <span class="lens-axis lens-axis-y"></span>
+          </div>
+          <span class="lens-caption">Camera Flip</span>
+          <p class="intro-copy">Camera của bạn.<br />Kết nối trong mạng nhà.</p>
+          <p class="intro-support">Đăng nhập để xem camera riêng tư.</p>
+        </div>
+
+        <div class="pair-panel">
+          <h2 id="pair-title">Mở camera của Flip</h2>
+          <p class="panel-copy" id="auth-copy">
+            Nhập mật khẩu xem đã đặt trên Flip. Không cần lấy mã hoặc duyệt lại trên điện thoại.
+          </p>
+
+          <form id="pair-form" class="pair-form">
+            <label for="viewer-name">Tên thiết bị này</label>
+            <input
+              id="viewer-name"
+              name="deviceName"
+              type="text"
+              value="Điện thoại"
+              maxlength="32"
+              autocomplete="username"
+              required
+            />
+            <label for="pair-code" id="credential-label">Mật khẩu xem</label>
+            <input
+              id="pair-code"
+              name="password"
+              type="password"
+              autocomplete="current-password"
+              autocapitalize="none"
+              spellcheck="false"
+              minlength="8"
+              maxlength="128"
+              aria-describedby="code-help pair-error"
+              required
+            />
+            <p id="code-help" class="field-help">Đặt mật khẩu một lần trong app Flip: Đặt / đổi mật khẩu xem.</p>
+            <p id="pair-error" class="form-message error-message" role="alert" hidden></p>
+            <button id="pair-submit" class="button primary" type="submit">
+              Đăng nhập
+            </button>
+            <button id="toggle-auth" class="text-button" type="button">Dùng mã ghép đôi</button>
+          </form>
+
+          <div id="pair-pending" class="pending-panel" role="status" aria-live="polite" hidden>
+            <span class="pending-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+            <div>
+              <h2>Đang chờ trên Flip</h2>
+              <p id="pending-copy">Mở ứng dụng trên Flip và cho phép yêu cầu này.</p>
+              <p class="countdown">Mã yêu cầu còn <time id="pending-time">02:00</time></p>
+            </div>
+            <button id="cancel-pending" class="text-button" type="button">Hủy chờ</button>
+          </div>
+
+          <p class="trust-note">
+            Kết nối HTTPS dùng chứng chỉ riêng của thiết bị. So sánh fingerprint trên Flip nếu trình duyệt yêu cầu xác minh.
+          </p>
+        </div>
+      </section>
+
+      <section id="viewer-screen" class="viewer-screen" aria-labelledby="viewer-title" hidden>
+        <div class="viewer-heading">
+          <div class="viewer-heading-info">
+            <h2 id="viewer-title">Camera Flip</h2>
+            <p class="panel-copy">Phiên chỉ xem · Thiết bị đã xác thực trong mạng nội bộ</p>
+          </div>
+
+          <nav class="nav-tabs" role="tablist" aria-label="Các trang chế độ xem">
+            <button type="button" role="tab" id="tab-live" class="nav-tab active" aria-selected="true" aria-controls="view-live" data-view="live">
+              <span class="tab-dot" aria-hidden="true"></span>
+              <span>Trực tiếp</span>
+            </button>
+            <button type="button" role="tab" id="tab-history" class="nav-tab" aria-selected="false" aria-controls="view-history" data-view="history">
+              <span class="tab-icon" aria-hidden="true">
+                <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.3"/><polyline points="8,4.5 8,8 10.5,9.5" stroke="currentColor" stroke-width="1.3"/></svg>
+              </span>
+              <span>Xem lại &amp; Lịch sử</span>
+            </button>
+            <button type="button" role="tab" id="tab-session" class="nav-tab" aria-selected="false" aria-controls="view-session" data-view="session">
+              <span class="tab-icon" aria-hidden="true">
+                <svg viewBox="0 0 16 16" fill="none"><rect x="3" y="3" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="8" r="2.5" stroke="currentColor" stroke-width="1.3"/></svg>
+              </span>
+              <span>Thiết bị &amp; Phiên</span>
+            </button>
+          </nav>
+
+          <div class="viewer-heading-actions">
+            <button id="logout" class="button secondary header-logout" type="button">Đăng xuất</button>
+          </div>
+        </div>
+
+        <!-- Trang 1: Xem trực tiếp camera (Viewfinder tối giản, tập trung) -->
+        <div id="view-live" class="tab-page active" role="tabpanel" aria-labelledby="tab-live">
+          <section class="camera-stage" aria-labelledby="stage-title">
+            <div class="stage-topline">
+              <div class="stage-topline-meta">
+                <span class="stage-label"><span class="stage-dot"></span>Camera siêu rộng 0.5×</span>
+                <span class="readonly-tag">Chỉ xem</span>
+              </div>
+              <div class="stage-actions">
+                <button id="toggle-audio" class="stage-action-btn" type="button" aria-pressed="false" aria-label="Bật âm thanh trực tiếp">
+                  <svg id="toggle-audio-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                    <path d="M9 4.5L5 8H2v4h3l4 3.5v-11z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path id="toggle-audio-waves" d="M12.5 7.5a4 4 0 0 1 0 5M15 5.5a7.5 7.5 0 0 1 0 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    <line id="toggle-audio-mute-slash" x1="3" y1="17" x2="17" y2="3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                  </svg>
+                  <span id="toggle-audio-label">Bật âm thanh</span>
+                </button>
+                <span id="device-temp" class="stage-action-btn" role="status" aria-label="Nhiệt độ pin Flip3" hidden>
+                  <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                    <path d="M8 3.5a2 2 0 1 1 4 0v7.2a3.5 3.5 0 1 1-4 0V3.5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+                  </svg>
+                  <span id="device-temp-value">--°C</span>
+                </span>
+                <span id="live-stats" class="stage-action-btn" role="status" aria-label="Tốc độ khung hình và mạng" hidden>
+                  <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                    <path d="M3 14a7 7 0 1 1 14 0M10 14l3.5-4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span id="live-fps-value">-- fps</span>
+                  <span id="live-net-value">-- Mbps</span>
+                </span>
+                <button id="toggle-torch" class="stage-action-btn" type="button" aria-pressed="false" aria-label="Bật đèn flash trên Flip3" hidden>
+                  <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                    <path d="M11 2L4.5 11H9.5L8.5 18L15.5 8.5H10.5L11 2z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span id="toggle-torch-label">Bật flash</span>
+                </button>
+                <button id="toggle-talkback" class="stage-action-btn" type="button" aria-pressed="false" aria-label="Nói qua loa Flip3">
+                  <svg id="toggle-talkback-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                    <path d="M10 2.5a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0v-5a3 3 0 0 0-3-3z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M15.5 8.5v2a5.5 5.5 0 0 1-11 0v-2M10 16v2.5M7 18.5h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span id="toggle-talkback-label">Nói qua loa</span>
+                </button>
+                <button id="toggle-fullscreen" class="stage-action-btn" type="button" aria-label="Toàn màn hình">
+                  <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                    <path d="M3 7V4a1 1 0 0 1 1-1h3M17 7V4a1 1 0 0 0-1-1h-3M3 13v3a1 1 0 0 0 1 1h3M17 13v3a1 1 0 0 1-1 1h-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span>Toàn màn hình</span>
+                </button>
+              </div>
+            </div>
+            <div id="live-frame" class="live-frame" data-state="connecting">
+              <span class="hud-corner hud-tl" aria-hidden="true"></span>
+              <span class="hud-corner hud-tr" aria-hidden="true"></span>
+              <span class="hud-corner hud-bl" aria-hidden="true"></span>
+              <span class="hud-corner hud-br" aria-hidden="true"></span>
+              <img
+                id="live-image"
+                alt="Hình ảnh trực tiếp từ camera Flip"
+                decoding="async"
+                hidden
+              />
+              <div id="live-placeholder" class="live-placeholder" role="status" aria-live="polite">
+                <div class="stage-aperture" aria-hidden="true">
+                  <span class="aperture-ring aperture-ring-a"><i></i></span>
+                  <span class="aperture-ring aperture-ring-b"></span>
+                </div>
+                <p id="stage-state" class="stage-state">Đang kết nối</p>
+                <h2 id="stage-title">Đang chờ khung hình</h2>
+                <p id="stage-copy" class="stage-copy">
+                  Giữ Flip kết nối Wi-Fi và camera đang hoạt động. Luồng sẽ tự nối lại nếu mạng chập chờn.
+                </p>
+                <button id="retry-live" class="text-button" type="button">Thử kết nối lại</button>
+              </div>
+            </div>
+            <div class="stage-footer">
+              <span id="frame-metadata">Video riêng tư · Không có điều khiển camera từ trình duyệt</span>
+              <span class="stage-lock">
+                <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                  <rect x="4" y="8" width="12" height="9" rx="2" stroke="currentColor" stroke-width="1.4" />
+                  <path d="M6.5 8V5.7a3.5 3.5 0 0 1 7 0V8" stroke="currentColor" stroke-width="1.4" />
+                </svg>
+                HTTPS
+              </span>
+            </div>
+          </section>
+
+          <div class="live-quick-actions">
+            <button type="button" id="jump-to-history" class="quick-nav-card">
+              <span class="quick-nav-icon" aria-hidden="true">
+                <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.4"/><polyline points="10,6 10,10 13,12" stroke="currentColor" stroke-width="1.4"/></svg>
+              </span>
+              <div class="quick-nav-text">
+                <strong class="quick-nav-title">Xem lại các bản ghi đã lưu trên Flip3</strong>
+                <span class="quick-nav-desc">Tra cứu video theo ngày, giờ và các sự kiện chuyển động gần đây</span>
+              </div>
+              <span class="quick-nav-arrow" aria-hidden="true">→</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Trang 2: Xem lại & Lịch sử (Trình phát video + Dòng thời gian + Sự kiện) -->
+        <div id="view-history" class="tab-page" role="tabpanel" aria-labelledby="tab-history" hidden>
+          <div class="history-view-layout">
+            <section id="playback-panel" class="playback-panel" aria-labelledby="playback-title" hidden>
+              <div class="timeline-heading">
+                <div>
+                  <h2 id="playback-title">Bản ghi đã chọn</h2>
+                </div>
+                <button id="close-playback" class="text-button" type="button">Đóng</button>
+              </div>
+              <p id="playback-details" class="playback-details"></p>
+              <video id="segment-player" controls preload="none" playsinline poster="assets/favicon.svg" aria-label="Phát lại bản ghi đã chọn"></video>
+              <div class="playback-controls">
+                <div class="playback-seek-group">
+                  <button type="button" id="seek-backward" class="button secondary seek-btn" title="Lùi 10 giây (Phím J hoặc ←)" aria-label="Lùi 10 giây">
+                    <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M8 5 3 10l5 5M17 5l-5 5 5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span>-10s</span>
+                  </button>
+                  <button type="button" id="playback-play-toggle" class="button secondary play-toggle-btn" aria-label="Phát hoặc tạm dừng" title="Phát hoặc tạm dừng (Phím Space hoặc K)">
+                    <span id="play-toggle-label">Tạm dừng</span>
+                  </button>
+                  <button type="button" id="seek-forward" class="button secondary seek-btn" title="Tiến 10 giây · Tự chuyển sang video tiếp theo khi hết đoạn (Phím L hoặc →)" aria-label="Tiến 10 giây, tự chuyển sang video tiếp">
+                    <span>+10s</span>
+                    <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m12 5 5 5-5 5M3 5l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </button>
+                  <button type="button" id="next-segment-btn" class="button secondary seek-btn" title="Chuyển sang video tiếp theo (Phím N)" aria-label="Chuyển sang video tiếp theo">
+                    <span>Video tiếp</span>
+                    <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><polygon points="5,4 13,10 5,16" fill="currentColor"/><line x1="15" y1="4" x2="15" y2="16" stroke="currentColor" stroke-width="2"/></svg>
+                  </button>
+                </div>
+                <a id="download-segment" class="button secondary" href="#" download hidden title="Tải video này về máy">Tải video về</a>
+                <div class="playback-speed-wrap">
+                  <label for="playback-speed">Tốc độ phát</label>
+                  <select id="playback-speed" aria-label="Tốc độ phát">
+                    <option value="0.5">0,5×</option>
+                    <option value="0.75">0,75×</option>
+                    <option value="1" selected>1×</option>
+                    <option value="1.25">1,25×</option>
+                    <option value="1.5">1,5×</option>
+                    <option value="2">2×</option>
+                  </select>
+                </div>
+              </div>
+              <p id="playback-status" class="timeline-status" role="status" aria-live="polite"></p>
+            </section>
+
+            <!-- Bộ chuyển đổi danh sách trên màn hình điện thoại -->
+            <div class="history-mobile-tabs" role="tablist" aria-label="Chọn danh sách trên điện thoại">
+              <button type="button" role="tab" id="subtab-timeline" class="subtab-btn active" aria-selected="true">
+                Bản ghi theo giờ
+              </button>
+              <button type="button" role="tab" id="subtab-events" class="subtab-btn" aria-selected="false">
+                Chuyển động (24h)
+              </button>
+            </div>
+
+            <div class="history-grid">
+              <section id="timeline-panel" class="timeline-panel mobile-active" aria-labelledby="timeline-title">
+                <div class="timeline-heading">
+                  <div>
+                    <h2 id="timeline-title">Xem lại bản ghi</h2>
+                  </div>
+                  <button id="timeline-refresh" class="text-button" type="button">Làm mới</button>
+                </div>
+                <form id="history-filter" class="pair-form">
+                  <label for="history-date">Ngày xem lại (giờ Flip3 · UTC+07:00)</label>
+                  <input id="history-date" type="date" required />
+                  <label for="history-hour">Giờ bắt đầu (UTC+07:00)</label>
+                  <div class="hour-stepper-wrap">
+                    <button type="button" id="prev-hour" class="button secondary stepper-btn" aria-label="Giờ trước">◀ Trước</button>
+                    <select id="history-hour" aria-label="Giờ bắt đầu (UTC+07:00)"></select>
+                    <button type="button" id="next-hour" class="button secondary stepper-btn" aria-label="Giờ tiếp theo">Sau ▶</button>
+                  </div>
+                  <button class="button secondary" type="submit">Tìm bản ghi trong giờ này</button>
+                </form>
+                <p id="timeline-status" class="timeline-status" role="status" aria-live="polite">
+                  Chọn ngày và giờ để xem video lưu trên Flip3.
+                </p>
+                <ol id="timeline-items" class="timeline-list" aria-label="Các bản ghi và khoảng gián đoạn"></ol>
+                <button id="history-more" class="button secondary" type="button" hidden>Xem thêm bản ghi trong giờ này</button>
+              </section>
+
+              <section id="events-panel" class="events-panel" aria-labelledby="events-title">
+                <div class="timeline-heading">
+                  <div>
+                    <h2 id="events-title">Chuyển động gần đây</h2>
+                  </div>
+                  <button id="events-refresh" class="text-button" type="button">Làm mới</button>
+                </div>
+                <p id="events-status" class="timeline-status" role="status" aria-live="polite">
+                  Đang tải sự kiện gần đây…
+                </p>
+                <ol id="event-items" class="event-list" aria-label="Sự kiện chuyển động"></ol>
+              </section>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trang 3: Thiết bị & Phiên truy cập -->
+        <div id="view-session" class="tab-page" role="tabpanel" aria-labelledby="tab-session" hidden>
+          <div class="session-view-container">
+            <aside class="session-panel" aria-labelledby="session-title">
+              <div class="session-heading">
+                <span class="session-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M4 8.5 12 4l8 4.5v7L12 20l-8-4.5v-7Z" stroke="currentColor" stroke-width="1.5" />
+                    <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5" />
+                  </svg>
+                </span>
+                <div>
+                  <h2 id="session-title">Quyền truy cập &amp; Thiết bị</h2>
+                  <p>Được quản lý trên điện thoại Flip</p>
+                </div>
+              </div>
+              <dl class="session-facts">
+                <div><dt>Thiết bị</dt><dd id="session-device">Flip Camera</dd></div>
+                <div><dt>Ống kính mặc định</dt><dd>Sau siêu rộng 0.5×</dd></div>
+                <div><dt>Quyền hạn</dt><dd><span class="permission-pill">Chỉ xem</span></dd></div>
+                <div><dt>Kết nối</dt><dd><span class="secure-value"><i></i>HTTPS</span></dd></div>
+                <div><dt>Phạm vi mạng</dt><dd>Mạng nội bộ LAN</dd></div>
+              </dl>
+              <p class="session-hint">Tắt viewer trên điện thoại để thu hồi tất cả phiên đang mở. Video chỉ phát khi Flip còn bật camera và phiên xác thực hợp lệ.</p>
+              <button id="retry-status" class="text-button retry-button" type="button">Kiểm tra lại phiên</button>
+              <p id="session-error" class="form-message error-message" role="alert" hidden></p>
+            </aside>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="page-footer">
+      <span>Flip Camera</span>
+      <span>Kết nối riêng trong mạng nội bộ</span>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,857 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b0e0d" />
+    <meta
+      name="description"
+      content="Flip Studio — Studio camera cá nhân trên Linux. Xem trực tiếp, chụp ảnh độ phân giải cao và ghi video bảo mật trong trình duyệt."
+    />
+    <title>Flip Studio · Camera cá nhân</title>
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="assets/fonts.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <script type="module" src="app.js"></script>
+  </head>
+  <body>
+    <a href="#main" class="skip-link">Chuyển đến nội dung</a>
+
+    <div class="studio-shell">
+      <!-- Sidebar Navigation -->
+      <aside class="sidebar" aria-label="Thanh điều hướng">
+        <div class="sidebar-header">
+          <a class="brand" href="#live" aria-label="Flip Studio — camera cá nhân">
+            <span class="brand-mark" aria-hidden="true"><i></i><i></i></span>
+            <span class="brand-text">
+              <span class="brand-name">flip<strong>studio</strong></span>
+              <span class="brand-tag">Camera cá nhân</span>
+            </span>
+          </a>
+        </div>
+
+        <nav class="navigation" aria-label="Chính">
+          <a href="#live" class="nav-link active" data-page="live">
+            <span class="nav-icon" data-icon="viewfinder"></span>
+            <span class="nav-text">Camera</span>
+            <span class="nav-marker" aria-hidden="true"></span>
+          </a>
+          <a href="#library" class="nav-link" data-page="library">
+            <span class="nav-icon" data-icon="gallery"></span>
+            <span class="nav-text">Thư viện</span>
+            <span class="nav-count" id="library-count">0</span>
+          </a>
+          <a href="#settings" class="nav-link" data-page="settings">
+            <span class="nav-icon" data-icon="sliders"></span>
+            <span class="nav-text">Cài đặt</span>
+          </a>
+          <a href="#help" class="nav-link" data-page="help">
+            <span class="nav-icon" data-icon="help"></span>
+            <span class="nav-text">Hướng dẫn</span>
+          </a>
+        </nav>
+
+        <div class="sidebar-middle">
+          <div class="sidebar-section-title">Camera giám sát</div>
+          <button class="action-item" id="open-security" type="button">
+            <span class="action-icon" data-icon="monitor"></span>
+            <span class="action-info">
+              <span class="action-name">Flip Security</span>
+              <small class="action-desc">Mở camera Z Flip3</small>
+            </span>
+          </button>
+        </div>
+
+        <div class="sidebar-devices">
+          <div class="sidebar-section-title">Nguồn hình ảnh</div>
+          <button class="device-item" id="sidebar-device" type="button">
+            <span class="device-icon" data-icon="camera"></span>
+            <span class="device-info">
+              <span class="device-name">Camera máy tính</span>
+              <small class="device-status" id="sidebar-source-status">Chưa bật</small>
+            </span>
+            <span class="device-indicator" id="device-indicator"></span>
+          </button>
+        </div>
+
+        <div class="sidebar-bottom">
+          <div class="workspace-chip">
+            <span class="local-dot" aria-hidden="true"></span>
+            <span class="workspace-text">Linux Cục bộ</span>
+            <span class="version-tag">v0.1</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Studio Viewport -->
+      <main id="main" class="main" tabindex="-1">
+        <header class="topbar">
+          <div class="topbar-left">
+            <div class="breadcrumb">
+              <span class="breadcrumb-root">Flip Studio</span>
+              <span class="breadcrumb-sep">/</span>
+              <strong class="breadcrumb-current" id="breadcrumb-page">Camera</strong>
+            </div>
+          </div>
+
+          <div class="topbar-center">
+            <div id="global-recording" class="global-recording" hidden>
+              <span class="record-symbol" aria-hidden="true"></span>
+              <a href="#live" class="recording-link">
+                <span>Đang quay</span>
+                <time id="global-record-time">00:00</time>
+              </a>
+              <button id="global-stop" type="button" class="global-stop-btn">Dừng & lưu</button>
+            </div>
+          </div>
+
+          <div class="topbar-right">
+            <span class="local-status">
+              <span class="local-dot" aria-hidden="true"></span>
+              <span>Chạy cục bộ</span>
+            </span>
+            <button
+              class="icon-button"
+              aria-label="Phím tắt và trợ giúp"
+              data-action="help"
+              type="button"
+            >
+              <span data-icon="help"></span>
+            </button>
+          </div>
+        </header>
+
+        <div class="page-content">
+          <!-- PAGE 1: CAMERA LIVE STUDIO -->
+          <section id="page-live" class="page">
+            <div class="page-heading">
+              <div class="heading-text">
+                <h1>Camera</h1>
+                <p id="camera-status" role="status" aria-live="polite">
+                  Bật camera để chụp ảnh hoặc quay video.
+                </p>
+              </div>
+              <div class="heading-actions">
+                <button class="button secondary connect-button" id="connect" type="button">
+                  <span data-icon="sliders"></span>
+                  <span id="connect-label">Chọn thiết bị</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="studio-layout">
+              <!-- Left Viewfinder Column -->
+              <div class="studio-main">
+                <div class="mode-bar">
+                  <div class="mode-pill">
+                    <span class="mode-icon" data-icon="camera"></span>
+                    <span>Chụp ảnh & quay video</span>
+                  </div>
+                  <span class="storage-badge">Lưu trong trình duyệt</span>
+                </div>
+
+                <!-- Alert & Demo Notices -->
+                <div id="camera-notice" class="camera-notice" hidden>
+                  <p id="camera-error" role="alert"></p>
+                  <div class="notice-actions">
+                    <button class="text-button" id="retry-camera" type="button">Thử lại</button>
+                    <a href="#help" class="notice-link">Hướng dẫn cấp quyền</a>
+                  </div>
+                </div>
+
+                <div class="demo-notice" id="demo-notice" hidden>
+                  <span class="demo-msg">Đang xem ảnh mẫu, không phải camera trực tiếp.</span>
+                  <button class="button secondary small-btn" id="start-from-demo" type="button">
+                    Bật camera thật
+                  </button>
+                </div>
+
+                <!-- Tactical Camera Viewfinder -->
+                <div
+                  class="viewfinder"
+                  id="viewfinder"
+                  data-state="off"
+                  aria-label="Khung xem camera"
+                >
+                  <div class="media-stage" id="media-stage">
+                    <img
+                      id="sample"
+                      hidden
+                      src="assets/studio.jpg"
+                      alt="Ảnh mẫu văn phòng làm việc"
+                    />
+                    <video
+                      id="camera-video"
+                      autoplay
+                      muted
+                      playsinline
+                      poster="assets/studio.jpg"
+                      hidden
+                    ></video>
+                  </div>
+
+                  <div class="view-shade"></div>
+
+                  <!-- 3x3 Grid Overlay -->
+                  <div id="grid-overlay" class="grid-overlay" hidden aria-hidden="true">
+                    <i></i><i></i><i></i><i></i>
+                  </div>
+
+                  <!-- Viewfinder Top HUD -->
+                  <div class="view-top">
+                    <span class="preview-badge" id="preview-badge">
+                      <span class="badge-dot" aria-hidden="true"></span>Chưa bật
+                    </span>
+                    <span class="view-clock" id="view-clock" aria-label="Thời gian"></span>
+                    <button
+                      class="view-icon"
+                      id="fullscreen"
+                      aria-label="Toàn màn hình"
+                      type="button"
+                    >
+                      <span data-icon="expand"></span>
+                    </button>
+                  </div>
+
+                  <!-- Focus Framing Corners -->
+                  <div class="focus-corners" aria-hidden="true">
+                    <i></i><i></i><i></i><i></i>
+                  </div>
+
+                  <!-- Off-State Caption Card -->
+                  <div class="sample-caption" id="sample-caption">
+                    <div class="caption-icon-wrap">
+                      <span class="off-camera-icon" data-icon="camera"></span>
+                    </div>
+                    <h2 id="preview-title">Camera chưa bật</h2>
+                    <p id="preview-description">
+                      Bật camera và cấp quyền truy cập khi trình duyệt yêu cầu để bắt đầu.
+                    </p>
+                    <div class="caption-actions">
+                      <button class="button primary" id="start-in-preview" type="button">
+                        <span data-icon="power"></span>Bật camera
+                      </button>
+                      <button
+                        class="button secondary"
+                        id="cancel-connection"
+                        hidden
+                        type="button"
+                      >
+                        Hủy kết nối
+                      </button>
+                      <button class="text-button" id="try-demo" type="button">
+                        Hoặc xem thử với ảnh mẫu
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Viewfinder Bottom HUD -->
+                  <div class="view-bottom">
+                    <div class="source-info">
+                      <span class="view-source" id="view-source">
+                        <span data-icon="image"></span>Camera máy tính
+                      </span>
+                      <span class="view-details" id="view-details">
+                        Chưa có camera đang hoạt động
+                      </span>
+                    </div>
+                    <span class="frame-size" id="frame-size">16:9</span>
+                  </div>
+
+                  <!-- Live Recording Badge -->
+                  <div
+                    class="recording-indicator"
+                    id="recording-indicator"
+                    hidden
+                  >
+                    <span class="record-dot" aria-hidden="true"></span>
+                    <time id="record-time">00:00</time>
+                  </div>
+
+                  <!-- Countdown Overlay -->
+                  <div class="countdown-overlay" id="countdown-overlay" hidden>
+                    <span id="countdown-number" aria-live="assertive">3</span>
+                    <button class="button secondary" id="cancel-countdown" type="button">
+                      Hủy chụp
+                    </button>
+                  </div>
+
+                  <!-- Shutter Flash Effect -->
+                  <div class="shutter-flash" id="shutter-flash" aria-hidden="true"></div>
+                </div>
+
+                <!-- Ergonomic Capture Control Deck -->
+                <div class="control-deck">
+                  <div class="deck-left">
+                    <button
+                      class="icon-button audio-button"
+                      id="toggle-audio"
+                      aria-label="Thu âm khi quay"
+                      aria-pressed="false"
+                      type="button"
+                    >
+                      <span id="audio-icon" data-icon="mic-off"></span>
+                      <span id="audio-label">Thu âm: tắt</span>
+                    </button>
+                  </div>
+
+                  <div class="capture-controls">
+                    <button
+                      class="shutter-button"
+                      id="take-photo"
+                      disabled
+                      aria-describedby="capture-hint"
+                      type="button"
+                    >
+                      <span class="shutter-icon" data-icon="camera"></span>
+                      <span id="photo-label">Chụp ảnh</span>
+                    </button>
+
+                    <button
+                      class="record-button"
+                      id="record"
+                      disabled
+                      aria-describedby="capture-hint"
+                      type="button"
+                    >
+                      <span class="record-symbol" aria-hidden="true"></span>
+                      <span id="record-label">Quay video</span>
+                    </button>
+                  </div>
+
+                  <div class="deck-right">
+                    <button
+                      class="icon-button stop-camera-button"
+                      id="stop-camera"
+                      hidden
+                      type="button"
+                    >
+                      <span data-icon="power"></span>
+                      <span>Tắt camera</span>
+                    </button>
+                  </div>
+                </div>
+
+                <p class="capture-hint" id="capture-hint">
+                  Bật camera để sử dụng nút chụp và quay.
+                </p>
+
+                <div class="preview-footnote">
+                  <span class="shield-icon" data-icon="shield"></span>
+                  <span>Xử lý ngay trên máy của bạn. Bảo mật và riêng tư.</span>
+                  <span class="shortcut-hint"><kbd>Space</kbd> Chụp ảnh</span>
+                </div>
+
+                <!-- Recent Captures Horizontal Strip -->
+                <section class="recent-section">
+                  <div class="section-heading">
+                    <div class="section-title-wrap">
+                      <h2>Vừa ghi lại</h2>
+                      <span class="counter-badge" id="recent-count">0</span>
+                    </div>
+                    <a href="#library" class="text-button section-link">
+                      Mở thư viện<span data-icon="arrow-right"></span>
+                    </a>
+                  </div>
+
+                  <div class="recent-grid" id="recent-grid"></div>
+
+                  <div class="empty-recent" id="empty-recent">
+                    <span class="empty-icon" data-icon="gallery"></span>
+                    <div class="empty-text">
+                      <strong>Chưa có ảnh hoặc video nào</strong>
+                      <p>
+                        Ảnh chụp và clip quay sẽ tự động xuất hiện tại đây.
+                      </p>
+                    </div>
+                    <button class="text-button" id="sample-capture" type="button">
+                      Xem thử ảnh mẫu<span data-icon="arrow-right"></span>
+                    </button>
+                  </div>
+                </section>
+              </div>
+
+              <!-- Right Settings Inspector Panel -->
+              <aside class="settings-panel" aria-label="Điều khiển camera">
+                <div class="panel-heading">
+                  <h2>Điều khiển camera</h2>
+                  <span class="panel-icon" data-icon="sliders"></span>
+                </div>
+
+                <!-- Panel Section 1: Source Selector -->
+                <section class="panel-section">
+                  <div class="field-heading">
+                    <h3>Nguồn hình ảnh</h3>
+                    <span class="field-note" id="source-state">Chưa bật</span>
+                  </div>
+                  <label class="select-wrap">
+                    <span class="select-icon" data-icon="monitor"></span>
+                    <select id="source" aria-label="Nguồn hình ảnh">
+                      <option value="off" disabled>Chưa bật camera</option>
+                      <option value="local">Camera máy tính</option>
+                      <option value="demo">Ảnh mẫu · Xem thử</option>
+                    </select>
+                    <span class="select-caret" data-icon="chevron-down"></span>
+                  </label>
+                  <p class="field-helper">Đổi webcam trong “Chọn thiết bị”.</p>
+                </section>
+
+                <!-- Panel Section 2: Framing & Mirror -->
+                <section class="panel-section quick-options">
+                  <h3>Bố cục & Khung hình</h3>
+                  <label class="switch-row" for="grid">
+                    <span class="switch-label">
+                      <span class="switch-icon" data-icon="grid"></span>Lưới căn hình 3×3
+                    </span>
+                    <input class="switch" id="grid" type="checkbox" />
+                  </label>
+                  <label class="switch-row" for="mirror">
+                    <span class="switch-label">
+                      <span class="switch-icon" data-icon="flip"></span>Lật ngang (gương)
+                    </span>
+                    <input class="switch" id="mirror" type="checkbox" />
+                  </label>
+                </section>
+
+                <!-- Panel Section 3: Shutter Timer -->
+                <section class="panel-section timer-section">
+                  <div class="field-heading">
+                    <label for="delay" class="field-title-label">
+                      <span data-icon="timer"></span>Hẹn giờ chụp
+                    </label>
+                    <select id="delay" class="timer-select">
+                      <option value="0">Tắt</option>
+                      <option value="3">3 giây</option>
+                      <option value="5">5 giây</option>
+                      <option value="10">10 giây</option>
+                    </select>
+                  </div>
+                </section>
+
+                <!-- Panel Section 4: Advanced Parameters (Details) -->
+                <details class="advanced-settings" id="advanced-settings">
+                  <summary>
+                    <span>Tùy chỉnh nâng cao</span>
+                    <span class="summary-caret" data-icon="chevron-down"></span>
+                  </summary>
+
+                  <section class="panel-sub-section">
+                    <h3>Độ phân giải & Tốc độ</h3>
+                    <label class="field-label" for="resolution">Kích thước khung hình</label>
+                    <label class="select-wrap">
+                      <select id="resolution">
+                        <option value="1080">1920 × 1080 · Full HD</option>
+                        <option value="720">1280 × 720 · HD</option>
+                        <option value="480">854 × 480 · Tiêu chuẩn</option>
+                      </select>
+                      <span class="select-caret" data-icon="chevron-down"></span>
+                    </label>
+
+                    <div class="field-heading fps-heading">
+                      <label for="fps">Tốc độ khung hình (FPS)</label>
+                      <span class="field-note">Mong muốn</span>
+                    </div>
+                    <div
+                      class="segmented"
+                      id="fps"
+                      role="group"
+                      aria-label="Khung hình mỗi giây"
+                    >
+                      <button data-fps="24" aria-pressed="false" type="button">24 fps</button>
+                      <button data-fps="30" aria-pressed="true" class="selected" type="button">30 fps</button>
+                      <button data-fps="60" aria-pressed="false" type="button">60 fps</button>
+                    </div>
+                    <p class="field-helper" id="quality-hint">
+                      Áp dụng khi bật camera. Tùy khả năng phần cứng.
+                    </p>
+                  </section>
+
+                  <section class="panel-sub-section">
+                    <div class="field-heading">
+                      <h3>Độ sáng hiển thị</h3>
+                      <button class="reset-button" id="reset-display" type="button">
+                        Đặt lại
+                      </button>
+                    </div>
+                    <p class="field-helper">
+                      Chỉnh sáng áp dụng cho ảnh chụp. Video giữ khung hình gốc.
+                    </p>
+                    <div class="field-heading slider-label">
+                      <label for="brightness">
+                        <span data-icon="sun"></span>Mức độ sáng
+                      </label>
+                      <output for="brightness" id="brightness-value">100%</output>
+                    </div>
+                    <input
+                      id="brightness"
+                      type="range"
+                      min="50"
+                      max="150"
+                      value="100"
+                      aria-label="Độ sáng"
+                    />
+                    <div class="range-labels">
+                      <span>50%</span>
+                      <span>100%</span>
+                      <span>150%</span>
+                    </div>
+                  </section>
+                </details>
+
+                <!-- Panel Section 5: Local Storage Note -->
+                <div class="storage-note">
+                  <span class="note-icon" data-icon="folder"></span>
+                  <div class="note-content">
+                    <strong>Lưu trữ an toàn trên máy</strong>
+                    <p>
+                      Mọi khoảnh khắc được lưu trực tiếp bằng IndexedDB trong trình duyệt.
+                    </p>
+                    <a href="#library" class="note-link">
+                      Quản lý thư viện<span data-icon="arrow-up-right"></span>
+                    </a>
+                  </div>
+                </div>
+              </aside>
+            </div>
+          </section>
+
+          <!-- PAGE 2: LIBRARY VIEW -->
+          <section id="page-library" class="page" hidden>
+            <div class="page-heading">
+              <div class="heading-text">
+                <h1>Thư viện</h1>
+                <p>Ảnh và video đã lưu trữ cục bộ trong trình duyệt máy tính.</p>
+              </div>
+              <div class="heading-actions">
+                <button class="button secondary" id="export-all" type="button">
+                  <span data-icon="download"></span>Tải tất cả (ZIP)
+                </button>
+              </div>
+            </div>
+
+            <div class="library-toolbar">
+              <div class="mode-tabs" role="group" aria-label="Lọc thư viện">
+                <button
+                  class="mode-tab selected"
+                  data-filter="all"
+                  aria-pressed="true"
+                  type="button"
+                >
+                  Tất cả
+                </button>
+                <button
+                  class="mode-tab"
+                  data-filter="photo"
+                  aria-pressed="false"
+                  type="button"
+                >
+                  Ảnh chụp
+                </button>
+                <button
+                  class="mode-tab"
+                  data-filter="video"
+                  aria-pressed="false"
+                  type="button"
+                >
+                  Video
+                </button>
+              </div>
+
+              <label class="search-field">
+                <span class="search-icon" data-icon="search"></span>
+                <input
+                  id="library-search"
+                  placeholder="Tìm kiếm theo tên tệp…"
+                  aria-label="Tìm trong thư viện"
+                />
+              </label>
+            </div>
+
+            <p class="library-summary" id="library-summary" role="status"></p>
+
+            <div class="library-grid" id="library-grid"></div>
+
+            <div class="empty-library" id="empty-library">
+              <span class="empty-lib-icon" data-icon="gallery"></span>
+              <h2>Chưa có khoảnh khắc nào</h2>
+              <p>Ảnh chụp và clip quay từ camera sẽ hiển thị tại đây.</p>
+              <div class="empty-lib-actions">
+                <a href="#live" class="button primary" id="empty-camera-link">Mở camera</a>
+                <button id="clear-filters" class="button secondary" hidden type="button">
+                  Xóa bộ lọc
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- PAGE 3: SETTINGS -->
+          <section id="page-settings" class="page" hidden>
+            <div class="page-heading">
+              <div class="heading-text">
+                <h1>Cài đặt</h1>
+                <p>Thông tin lưu trữ, tính năng bảo mật và phiên bản ứng dụng.</p>
+              </div>
+            </div>
+
+            <div class="info-layout">
+              <section class="info-card">
+                <span class="info-icon" data-icon="folder"></span>
+                <h2>Lưu trữ cục bộ</h2>
+                <p>
+                  Ảnh và video được lưu trữ bằng cơ sở dữ liệu IndexedDB của trình duyệt. Dữ liệu này độc lập trên mỗi cấu hình trình duyệt và không chia sẻ ra ngoài.
+                </p>
+                <div class="info-stats-grid">
+                  <div class="info-stat">
+                    <span>Số tệp lưu trữ</span>
+                    <strong id="stored-files">0</strong>
+                  </div>
+                  <div class="info-stat">
+                    <span>Dung lượng đã dùng</span>
+                    <strong id="stored-size">0 MB</strong>
+                  </div>
+                </div>
+                <a href="#library" class="button secondary inline-btn">Mở thư viện</a>
+              </section>
+
+              <section class="info-card">
+                <span class="info-icon" data-icon="shield"></span>
+                <h2>Bảo mật & Quyền riêng tư</h2>
+                <p>
+                  Dòng dữ liệu hình ảnh và âm thanh được xử lý hoàn toàn cục bộ trên máy tính của bạn. Không gửi bất kỳ dữ liệu đa phương tiện nào lên máy chủ bên ngoài.
+                </p>
+                <p>
+                  Khi không sử dụng, nhấn nút tắt camera hoặc đóng tab trình duyệt để giải phóng hoàn toàn thiết bị quang học và micro.
+                </p>
+              </section>
+
+              <section class="info-card">
+                <span class="info-icon" data-icon="phone"></span>
+                <h2>Lộ trình Flip Studio</h2>
+                <div class="roadmap-list">
+                  <div class="roadmap-item">
+                    <span class="local-dot"></span>
+                    <span class="roadmap-text">Chụp & quay trên Linux</span>
+                    <small class="roadmap-badge active">Hiện tại</small>
+                  </div>
+                  <div class="roadmap-item">
+                    <span class="muted-dot"></span>
+                    <span class="roadmap-text">Kết nối Z Flip3 góc siêu rộng 0.5×</span>
+                    <small class="roadmap-badge">Kế hoạch</small>
+                  </div>
+                  <div class="roadmap-item">
+                    <span class="muted-dot"></span>
+                    <span class="roadmap-text">Giám sát an ninh & webcam ảo</span>
+                    <small class="roadmap-badge">Kế hoạch</small>
+                  </div>
+                </div>
+                <p class="field-helper">
+                  Flip Studio v0.1 · Kiến trúc độc lập cho Linux
+                </p>
+              </section>
+            </div>
+          </section>
+
+          <!-- PAGE 4: HELP & FAQ -->
+          <section id="page-help" class="page" hidden>
+            <div class="page-heading">
+              <div class="heading-text">
+                <h1>Hướng dẫn & Trợ giúp</h1>
+                <p>Cách thức sử dụng và giải đáp các câu hỏi thường gặp.</p>
+              </div>
+            </div>
+
+            <div class="help-content">
+              <details class="help-card" open>
+                <summary>
+                  <span>Làm sao để bật và cấp quyền camera?</span>
+                  <span class="summary-caret" data-icon="chevron-down"></span>
+                </summary>
+                <p>
+                  Nhấn “Bật camera” ngay tại khung xem hoặc nhấn “Chọn thiết bị”. Trình duyệt sẽ hiển thị thông báo hỏi cấp quyền; hãy chọn “Cho phép”. Nếu cần thu âm cùng video, hãy tích chọn micro trước khi kết nối.
+                </p>
+              </details>
+
+              <details class="help-card">
+                <summary>
+                  <span>Chế độ ảnh mẫu hoạt động như thế nào?</span>
+                  <span class="summary-caret" data-icon="chevron-down"></span>
+                </summary>
+                <p>
+                  Khi chưa có camera hoặc muốn thử nghiệm giao diện, bạn có thể nhấn “Xem thử với ảnh mẫu”. Hệ thống sẽ nạp ảnh mẫu chuẩn studio để bạn thử chụp và làm quen với bộ sưu tập thư viện.
+                </p>
+              </details>
+
+              <details class="help-card">
+                <summary>
+                  <span>Ảnh và video được lưu trữ ở đâu?</span>
+                  <span class="summary-caret" data-icon="chevron-down"></span>
+                </summary>
+                <p>
+                  Tất cả tệp được lưu trong bộ nhớ IndexedDB của trình duyệt trên máy tính. Bạn có thể nhấn “Tải tất cả (ZIP)” hoặc mở từng tệp để tải về thư mục Downloads của hệ điều hành.
+                </p>
+              </details>
+
+              <details class="help-card">
+                <summary>
+                  <span>Kết nối với điện thoại Galaxy Z Flip3 thế nào?</span>
+                  <span class="summary-caret" data-icon="chevron-down"></span>
+                </summary>
+                <p>
+                  Để xem camera an ninh từ Samsung Galaxy Z Flip3 qua mạng nội bộ HTTPS, mở mục “Camera giám sát” ở thanh điều hướng bên trái, sau đó nhập địa chỉ IP cổng 8443 được cấp từ app Flip Camera.
+                </p>
+              </details>
+
+              <details class="help-card">
+                <summary>
+                  <span>Sự cố camera không mở được hoặc báo lỗi?</span>
+                  <span class="summary-caret" data-icon="chevron-down"></span>
+                </summary>
+                <p>
+                  Kiểm tra xem ứng dụng khác (Zoom, Teams, OBS) có đang chiếm giữ webcam hay không. Nếu lỗi micro, hãy thử tắt tùy chọn thu âm trước khi bật lại camera.
+                </p>
+              </details>
+
+              <div class="keyboard-help">
+                <div class="keyboard-title">
+                  <span data-icon="sliders"></span>
+                  <h3>Phím tắt điều khiển nhanh</h3>
+                </div>
+                <div class="keyboard-grid">
+                  <div class="key-item">
+                    <kbd>Space</kbd>
+                    <span>Chụp ảnh tức thì</span>
+                  </div>
+                  <div class="key-item">
+                    <kbd>R</kbd>
+                    <span>Bắt đầu / Dừng quay video</span>
+                  </div>
+                  <div class="key-item">
+                    <kbd>G</kbd>
+                    <span>Bật / Tắt lưới căn hình 3×3</span>
+                  </div>
+                  <div class="key-item">
+                    <kbd>Esc</kbd>
+                    <span>Đóng hộp thoại đang mở</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Studio Footer -->
+          <footer class="footer">
+            <div class="footer-left">
+              <span class="footer-brand">flip<strong>studio</strong></span>
+              <span class="footer-sep">/</span>
+              <span>Giao diện camera chuyên dụng cho Linux</span>
+            </div>
+            <div class="footer-right">
+              <span class="local-dot"></span>
+              <span>100% Cục bộ & Bảo mật</span>
+            </div>
+          </footer>
+        </div>
+      </main>
+    </div>
+
+    <!-- DIALOG 1: SECURITY CAMERA (Z FLIP3) -->
+    <dialog id="security-dialog" class="modal" aria-labelledby="security-title">
+      <form method="dialog">
+        <button class="modal-close icon-button" aria-label="Đóng" type="submit">
+          <span data-icon="x"></span>
+        </button>
+      </form>
+      <div class="modal-hero">
+        <span class="modal-hero-icon" data-icon="monitor"></span>
+        <h2 id="security-title">Xem camera an ninh</h2>
+        <p>Bật camera và HTTPS viewer trong ứng dụng Flip Camera trên điện thoại, rồi nhập địa chỉ hiển thị ở đó.</p>
+      </div>
+      <form id="security-form">
+        <div class="form-group">
+          <label class="field-label" for="security-address">Địa chỉ HTTPS của Flip Camera</label>
+          <input
+            id="security-address"
+            class="security-address"
+            type="url"
+            placeholder="https://192.168.1.10:8443"
+            required
+            autocomplete="off"
+            spellcheck="false"
+            aria-describedby="security-help security-error"
+          />
+        </div>
+        <p id="security-help" class="field-helper">
+          Máy tính và Z Flip3 cần kết nối chung Wi-Fi hoặc mạng Tailscale. Xác minh fingerprint chứng chỉ TLS và mã ghép đôi hiển thị trên điện thoại.
+        </p>
+        <p id="security-error" class="error-message" role="alert" hidden></p>
+        <button class="button primary full-width" type="submit">
+          Mở cửa sổ camera
+        </button>
+      </form>
+    </dialog>
+
+    <!-- DIALOG 2: CONNECT CAMERA MODAL -->
+    <dialog id="connect-dialog" class="modal" aria-label="Chọn thiết bị camera">
+      <form method="dialog">
+        <button class="modal-close icon-button" aria-label="Đóng" type="submit">
+          <span data-icon="x"></span>
+        </button>
+      </form>
+      <div class="modal-hero">
+        <span class="modal-hero-icon" data-icon="camera"></span>
+        <h2>Chọn thiết bị ghi hình</h2>
+        <p>Lựa chọn webcam và thiết lập âm thanh trước khi mở khung xem.</p>
+      </div>
+      <div class="form-group">
+        <label class="field-label" for="device-list">Camera khả dụng</label>
+        <label class="select-wrap">
+          <select id="device-list">
+            <option value="">Camera mặc định hệ thống</option>
+          </select>
+          <span class="select-caret" data-icon="chevron-down"></span>
+        </label>
+      </div>
+      <label class="switch-row" for="connect-audio">
+        <span class="switch-label">Thu âm micro khi quay video</span>
+        <input class="switch" id="connect-audio" type="checkbox" />
+      </label>
+      <p class="field-helper">
+        Trình duyệt sẽ yêu cầu quyền camera và micro khi bắt đầu. Tên các thiết bị khác sẽ hiển thị sau khi đã cấp quyền.
+      </p>
+      <p id="connect-error" class="error-message" role="alert" hidden></p>
+      <div class="modal-actions">
+        <button class="button primary full-width" id="connect-start" type="button">
+          <span data-icon="power"></span>Bật camera
+        </button>
+        <button class="button ghost full-width" id="use-demo" type="button">
+          Tiếp tục với ảnh mẫu
+        </button>
+      </div>
+    </dialog>
+
+    <!-- DIALOG 3: MEDIA DETAIL LIGHTBOX -->
+    <dialog
+      id="media-dialog"
+      class="media-modal"
+      aria-label="Xem ảnh hoặc video"
+    >
+      <form method="dialog">
+        <button
+          class="modal-close icon-button"
+          aria-label="Đóng ảnh hoặc video"
+          type="submit"
+        >
+          <span data-icon="x"></span>
+        </button>
+      </form>
+      <div id="media-detail"></div>
+    </dialog>
+
+    <!-- TOAST NOTIFICATION -->
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden>
+      <span class="toast-icon" data-icon="check"></span>
+      <span id="toast-message"></span>
+      <button id="toast-action" hidden type="button"></button>
+    </div>
+  </body>
+</html>

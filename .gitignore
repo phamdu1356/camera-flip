@@ -6,3 +6,15 @@ recordings/*
 snapshots/*
 !snapshots/.gitkeep
 .DS_Store
+
+# Trạng thái agent, ảnh chụp viewer đã đăng nhập và cấu hình proxy riêng (có tên miền thật) — không đưa lên repo công khai
+.agent-router/
+.taste-skill/
+scripts/public-proxy/
+docs/PUBLIC_ACCESS.md
+
+# Không đưa tài liệu/hướng dẫn agent lên repo công khai (chỉ push code)
+AGENTS.md
+docs/
+agy/
+android/README_ANDROID.md
